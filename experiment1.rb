@@ -29,7 +29,7 @@ class Map
   end
 
   def fire!(x, y)
-    hit = @map[y][x] == 1
+    hit = @map[y][x] == TILE_SHIP
     @map[y][x] = TILE_WRACK if hit
     @shots << Shot.new(x, y, hit)
     return hit
@@ -71,16 +71,17 @@ class Engine
   def initialize(player1)
     @map1 = Map.new
     @player1 = player1
+    @turn_no = 0
   end
 
   def run
-    turn_no = 0
+    @turn_no = 0
     while(!@map1.end?) do
-      turn_no += 1
+      @turn_no += 1
       map_interface = MapInterface.new(@map1)
 
       point1 = @player1.player_turn(map_interface)
-      puts "---[#{turn_no}]----------------------"
+      puts "---[#{@turn_no}]----------------------"
       @map1.dump()
     end
 
