@@ -1,18 +1,4 @@
-code = <<-'CODE'
-
-$MAP = [
-  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-  [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-  [1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  [1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-  [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
-  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-  [0, 0, 1, 1, 1, 0, 1, 1, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
-
+code_template = <<-'CODE_TEMPLATE'
 Shot = Struct.new(:x, :y, :hit)
 
 class Map
@@ -20,9 +6,9 @@ class Map
   TILE_SHIP   = 1
   TILE_WRACK  = 2
 
-  def initialize
+  def initialize(map)
     # hack for deep clone of an array:
-    @map = Marshal.load(Marshal.dump($MAP))
+    @map = Marshal.load(Marshal.dump(map))
     @shots = []
   end
 
@@ -71,25 +57,6 @@ class MapInterface
   end
 end
 
-class PlayerSmarter
-  def player_turn(map)
-
-    loop do
-      @x = rand(10)
-      @y = rand(10)
-      break unless map.visited?(@x, @y)
-    end
-
-    map.fire!(@x, @y)
-  end
-end
-
-class PlayerDummy
-  def player_turn(map)
-    map.fire!(rand(10), rand(10))
-  end
-end
-
 class Engine
   def initialize(player, map)
     @map = map
@@ -119,11 +86,69 @@ class Engine
   end
 end
 
-e = Engine.new(PlayerDummy.new, Map.new)
+<%= player_class %>
+
+map = <%= map %>
+
+e = Engine.new(Player.new, Map.new(map))
 e.run
-CODE
+CODE_TEMPLATE
+
+# class PlayerSmarter
+#   def player_turn(map)
+#
+#     loop do
+#       @x = rand(10)
+#       @y = rand(10)
+#       break unless map.visited?(@x, @y)
+#     end
+#
+#     map.fire!(@x, @y)
+#   end
+# end
+#
+# class PlayerDummy
+#   def player_turn(map)
+#     map.fire!(rand(10), rand(10))
+#   end
+# end
+
+player_class = <<-'PLAYER_CODE'
+class Player
+  def player_turn(map)
+
+    loop do
+      @x = rand(10)
+      @y = rand(10)
+      break unless map.visited?(@x, @y)
+    end
+
+    map.fire!(@x, @y)
+  end
+end
+PLAYER_CODE
+
+map = <<-MAP
+[
+  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+  [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+  [1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  [1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 1, 1, 1, 0, 1, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+]
+MAP
 
 require 'sicuro'
+require 'erb'
+
+erb = ERB.new(code_template, nil, "<>")
+code = erb.result binding
+
 r = Sicuro.eval(code)
 if r.stderr.empty?
   puts r.stdout
