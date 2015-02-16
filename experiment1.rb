@@ -100,8 +100,8 @@ class PlayerDecorator < SimpleDelegator
 end
 
 class Game < Struct.new(:player1, :player2, :map1, :map2)
-  def initialize(player1, player2, map1, map2)
-    super(PlayerDecorator.new(0, player1), PlayerDecorator.new(1, player2), map1, map2)
+  def initialize(*)
+    super
     @turn = 0
   end
 
@@ -134,5 +134,5 @@ class Game < Struct.new(:player1, :player2, :map1, :map2)
   end
 end
 
-g = Game.new(PlayerSmarter.new, PlayerDummy.new, Map.new, Map.new)
+g = Game.new(PlayerDecorator.new(0, PlayerSmarter.new), PlayerDecorator.new(1, PlayerDummy.new), Map.new, Map.new)
 g.run
