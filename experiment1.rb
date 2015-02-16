@@ -19,8 +19,8 @@ class Map
   TILE_WRACK  = 2
 
   def initialize
-    # @map = Array.new(10) { Array.new(10) { TILE_SEA } }
-    @map = $MAP.clone
+    # hack for deep clone of an array:
+    @map = Marshal.load(Marshal.dump($MAP))
     @shots = []
   end
 
