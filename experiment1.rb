@@ -1,4 +1,4 @@
-require 'delegate'
+code = <<-'CODE'
 
 $MAP = [
   [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
@@ -90,6 +90,24 @@ class PlayerDummy
   end
 end
 
+class SimpleDelegator
+  def initialize(obj)
+    @__object = obj
+  end
+
+  def method_missing(method, args)
+    @__object.public_send(method, args)
+  end
+
+  def respond_to?(method)
+    @__object.respond_to(method)
+  end
+
+  def inspect
+    "SimpleDelegator around #{@__object.inspect}>"
+  end
+end
+
 class PlayerDecorator < SimpleDelegator
   attr_reader :player_index
 
@@ -136,3 +154,13 @@ end
 
 g = Game.new(PlayerDecorator.new(0, PlayerSmarter.new), PlayerDecorator.new(1, PlayerDummy.new), Map.new, Map.new)
 g.run
+CODE
+
+require 'sicuro'
+r = Sicuro.eval(code)
+if r.stderr.empty?
+  puts r.stdout
+else
+  puts "Error!"
+  puts r.stderr
+end
