@@ -14,6 +14,7 @@
   <% end %>
 
   <%= form_for(@game, remote: true, format: :json) do |f| %>
+    <%= f.text_area :code, class: "code" %>
     <%= f.submit "Submit" %>
   <% end %>
 </div>

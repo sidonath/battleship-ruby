@@ -20,9 +20,8 @@ body {
 
 h1 {
   color: #7a262c;
-  font-size: 4em;
+  font-size: 30px;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .container {
@@ -33,14 +32,14 @@ h1 {
 table {
   border-spacing: 0;
   border-collapse: collapse;
-  display: inline-block;
+  float: left;
 }
 
 table td {
   width: 50px;
   height: 50px;
   text-align: center;
-  border: 1px solid #404040;
+  border: 2px solid #404040;
 }
 
 td.ship {
@@ -48,13 +47,19 @@ td.ship {
 }
 
 td.result-0 {
-  background-color: #7a262c;
-}
-
-td.result-1 {
   background-color: #d8a00c;
 }
 
+td.result-1 {
+  background-color: #7a262c;
+}
+
 #player-0 {
-  margin-right: 105px;
+  margin-right: 92px;
+}
+
+.code {
+  width: 955px;
+  height: 300px;
+  margin-top: 25px;
 }
