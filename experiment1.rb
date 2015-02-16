@@ -77,7 +77,7 @@ class PlayerSmarter
     loop do
       @x = rand(10)
       @y = rand(10)
-      break if !map.visited?(@x, @y)
+      break unless map.visited?(@x, @y)
     end
 
     map.fire!(@x, @y)
