@@ -1,3 +1,5 @@
+require 'delegate'
+
 $MAP = [
   [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
   [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
@@ -45,46 +47,27 @@ class Map
 end
 
 class MapInterface
+  attr_reader :was_hit, :last_shot
 
   def initialize(map)
     @map = map
     @turn_done = false
+    @was_hit = false
   end
 
   def fire!(x, y)
-    if !@turn_done
-      @turn_done = true
-      return @map.fire!(x, y)
-    end    
-    return false
+    if @turn_done
+      raise "You can call fire! only once per turn!"
+    end
+
+    @turn_done = true
+    @last_shot = [x, y]
+    @was_hit = @map.fire!(x, y)
   end
 
   # TODO Ovo je pravo zno-ru
   def visited?(x, y)
     return !@map.shots.find { |s| s.x == x && s.y == y }.nil?
-  end
-end
-
-
-class Engine
-
-  def initialize(player1)
-    @map1 = Map.new
-    @player1 = player1
-    @turn_no = 0
-  end
-
-  def run
-    @turn_no = 0
-    while(!@map1.end?) do
-      @turn_no += 1
-      map_interface = MapInterface.new(@map1)
-
-      point1 = @player1.player_turn(map_interface)
-      puts "---[#{@turn_no}]----------------------"
-      @map1.dump()
-    end
-
   end
 end
 
@@ -107,5 +90,49 @@ class PlayerDummy
   end
 end
 
-e = Engine.new(PlayerSmarter.new)
-e.run
+class PlayerDecorator < SimpleDelegator
+  attr_reader :player_index
+
+  def initialize(player_index, *args)
+    @player_index = player_index
+    super(*args)
+  end
+end
+
+class Game < Struct.new(:player1, :player2, :map1, :map2)
+  def initialize(player1, player2, map1, map2)
+    super(PlayerDecorator.new(0, player1), PlayerDecorator.new(1, player2), map1, map2)
+    @turn = 0
+  end
+
+  def run
+    loop do
+      @turn += 1
+
+      status = catch :end do
+        run_player(player1, map2)
+        run_player(player2, map1)
+      end
+
+      break if @turn > 200 || status == :win
+    end
+  end
+
+  private
+
+  def run_player(player, opponent_map)
+    loop do
+      mi = MapInterface.new(opponent_map)
+      player.player_turn(mi)
+
+      x, y = mi.last_shot
+      puts "#{player.player_index} #{x} #{y} #{mi.was_hit ? 1 : 0}"
+
+      throw :end, :win if opponent_map.end?
+      break unless mi.was_hit
+    end
+  end
+end
+
+g = Game.new(PlayerSmarter.new, PlayerDummy.new, Map.new, Map.new)
+g.run
