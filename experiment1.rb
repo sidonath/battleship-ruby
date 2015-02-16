@@ -90,70 +90,37 @@ class PlayerDummy
   end
 end
 
-class SimpleDelegator
-  def initialize(obj)
-    @__object = obj
-  end
-
-  def method_missing(method, args)
-    @__object.public_send(method, args)
-  end
-
-  def respond_to?(method)
-    @__object.respond_to(method)
-  end
-
-  def inspect
-    "SimpleDelegator around #{@__object.inspect}>"
-  end
-end
-
-class PlayerDecorator < SimpleDelegator
-  attr_reader :player_index
-
-  def initialize(player_index, *args)
-    @player_index = player_index
-    super(*args)
-  end
-end
-
-class Game < Struct.new(:player1, :player2, :map1, :map2)
-  def initialize(*)
-    super
-    @turn = 0
+class Engine
+  def initialize(player, map)
+    @map = map
+    @player = player
+    @turn_no = 0
   end
 
   def run
-    loop do
-      @turn += 1
+    @turn_no = 0
 
-      status = catch :end do
-        run_player(player1, map2)
-        run_player(player2, map1)
+    loop do
+      @turn_no += 1
+      map_interface = MapInterface.new(@map)
+
+      @player.player_turn(map_interface)
+
+      x, y = map_interface.last_shot
+      puts "#{x} #{y} #{map_interface.was_hit ? 1 : 0}"
+
+      if @turn_no >= 200
+        puts "EXCEEDED LIMIT"
+        break
       end
 
-      break if @turn > 200 || status == :win
-    end
-  end
-
-  private
-
-  def run_player(player, opponent_map)
-    loop do
-      mi = MapInterface.new(opponent_map)
-      player.player_turn(mi)
-
-      x, y = mi.last_shot
-      puts "#{player.player_index} #{x} #{y} #{mi.was_hit ? 1 : 0}"
-
-      throw :end, :win if opponent_map.end?
-      break unless mi.was_hit
+      break if @map.end?
     end
   end
 end
 
-g = Game.new(PlayerDecorator.new(0, PlayerSmarter.new), PlayerDecorator.new(1, PlayerDummy.new), Map.new, Map.new)
-g.run
+e = Engine.new(PlayerDummy.new, Map.new)
+e.run
 CODE
 
 require 'sicuro'
