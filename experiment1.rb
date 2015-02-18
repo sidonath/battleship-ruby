@@ -172,4 +172,49 @@ class PlayerRunner < Struct.new(:player_class, :map)
   end
 end
 
-p PlayerRunner.new(player_class, map).()
+class GameRunner < Struct.new(:player_1_class, :player_2_class, :map)
+  def call
+    player_1_runner = PlayerRunner.new(player_1_class, map)
+    player_2_runner = PlayerRunner.new(player_2_class, map)
+
+    player_1_results = player_1_runner.().map { |s| s.split.map(&:to_i) }
+    player_2_results = player_2_runner.().map { |s| s.split.map(&:to_i) }
+
+    moves = []
+
+    loop do
+      p1_last_shot_index = player_1_results.find_index { |(x, y, result)| result == 0 }
+      p2_last_shot_index = player_2_results.find_index { |(x, y, result)| result == 0 }
+
+      if p1_last_shot_index
+        p1_moves = player_1_results[0..p1_last_shot_index].map { |(x, y, result)| { player: 0, x: x, y: y, result: result } }
+      else
+        p1_moves = player_1_results.map { |(x, y, result)| { player: 0, x: x, y: y, result: result } }
+      end
+
+      if p2_last_shot_index
+        p2_moves = player_2_results[0..p2_last_shot_index].map { |(x, y, result)| { player: 1, x: x, y: y, result: result } }
+      else
+        p2_moves = player_2_results.map { |(x, y, result)| { player: 1, x: x, y: y, result: result } }
+      end
+
+      if p1_last_shot_index || p1_moves[2] == 0
+        moves << p1_moves + p2_moves
+      else
+        moves << p1_moves
+      end
+
+      break if !p1_last_shot_index || !p2_last_shot_index
+
+      player_1_results = player_1_results[p1_last_shot_index+1..-1]
+      player_2_results = player_2_results[p2_last_shot_index+1..-1]
+
+      break if player_1_results.empty? || player_2_results.empty?
+    end
+
+    moves
+  end
+end
+
+# p PlayerRunner.new(player_class, map).()
+p GameRunner.new(player_class, player_class, map).()
