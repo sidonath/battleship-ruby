@@ -113,7 +113,7 @@ CODE_TEMPLATE
 # end
 
 player_class = <<-'PLAYER_CODE'
-class Player
+class PlayerSmarter
   def player_turn(map)
 
     loop do
@@ -125,6 +125,20 @@ class Player
     map.fire!(@x, @y)
   end
 end
+
+class PlayerDummy
+  def player_turn(map)
+    map.fire!(rand(10), rand(10))
+  end
+end
+
+class PlayerWhoDoesntGetIt
+  def player_turn(map)
+    map.fire!(0, 0)
+  end
+end
+
+Player = PlayerSmarter
 PLAYER_CODE
 
 map =
