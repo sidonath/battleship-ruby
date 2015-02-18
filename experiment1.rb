@@ -77,7 +77,6 @@ class Engine
       puts "#{x} #{y} #{map_interface.was_hit ? 1 : 0}"
 
       if @turn_no >= 200
-        puts "EXCEEDED LIMIT"
         break
       end
 
