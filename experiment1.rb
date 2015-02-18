@@ -153,7 +153,7 @@ class PlayerRunner < Struct.new(:player_class, :map)
     if r.stderr.empty?
       return r.stdout.split("\n")
     else
-      throw RuntimeError, r.stderr
+      raise RuntimeError, r.stderr
     end
   end
 end
