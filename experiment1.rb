@@ -1,4 +1,4 @@
-code_template = <<-'CODE_TEMPLATE'
+CODE_TEMPLATE = <<-'CODE_TEMPLATE'
 Shot = Struct.new(:x, :y, :hit)
 
 class Map
@@ -128,31 +128,35 @@ class Player
 end
 PLAYER_CODE
 
-map = <<-MAP
-[
-  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-  [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-  [1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  [1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-  [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
-  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-  [0, 0, 1, 1, 1, 0, 1, 1, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-]
-MAP
+map =
+  [
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+    [1, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 1, 1, 0, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]
 
 require 'sicuro'
 require 'erb'
 
-erb = ERB.new(code_template, nil, "<>")
-code = erb.result binding
+class PlayerRunner < Struct.new(:player_class, :map)
+  def call
+    erb = ERB.new(CODE_TEMPLATE, nil, "<>")
+    code = erb.result binding
 
-r = Sicuro.eval(code)
-if r.stderr.empty?
-  puts r.stdout
-else
-  puts "Error!"
-  puts r.stderr
+    r = Sicuro.eval(code)
+    if r.stderr.empty?
+      return r.stdout.split("\n")
+    else
+      throw RuntimeError, r.stderr
+    end
+  end
 end
+
+p PlayerRunner.new(player_class, map).()
