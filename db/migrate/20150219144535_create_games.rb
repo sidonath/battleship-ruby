@@ -7,7 +7,8 @@ class CreateGames < ActiveRecord::Migration
 
       t.timestamps null: false
     end
-    add_foreign_key :games, :home_players
-    add_foreign_key :games, :guest_players
+
+    add_foreign_key :games, :users, column: :home_player_id
+    add_foreign_key :games, :users, column: :guest_player_id
   end
 end
