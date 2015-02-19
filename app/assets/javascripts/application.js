@@ -11,9 +11,23 @@ $(document).on("ajax:success", function(event, response) {
   if (response['error']) {
     alert(response['error']);
   } else {
-    drawMoves(response["moves"], response["map"]);
+    var moves = response["moves"];
+    var map = response["map"];
+    drawMoves(moves, map);
+    drawWinner(moves[moves.length-1]);
   }
 })
+
+var drawWinner = function(lastMove) {
+  var player = lastMove["player"];
+  var result = lastMove["result"];
+  if (result == 1) {
+    alert("Player " + player + " wins!");
+  }
+  else {
+    alert("Draw!");
+  }
+}
 
 var drawMoves = function(moves, map) {
   drawMap(0, map);
