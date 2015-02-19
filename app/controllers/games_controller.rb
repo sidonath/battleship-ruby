@@ -34,11 +34,21 @@ MAP = [
 
 class GamesController < ApplicationController
   def show
-    @game = Game.new(code: STARTING_POINT)
+    code =
+      if current_user.code.present?
+        current_user.code
+      else
+        STARTING_POINT
+      end
+
+    @game = Game.new(code: code)
     @map = MAP
   end
 
   def create
+    code = params[:game][:code]
+    current_user.update!(code: code)
+
     gr = GameRunner.new(params[:game][:code], BOT, MAP)
     moves = gr.()
     render json: { map: MAP, moves: moves.flatten }
