@@ -19,7 +19,11 @@
 //= require_tree .
 
 $(document).on("ajax:success", function(event, response) {
-  drawMoves(response["moves"], response["map"]);
+  if (response['error']) {
+    alert(response['error']);
+  } else {
+    drawMoves(response["moves"], response["map"]);
+  }
 })
 
 var drawMoves = function(moves, map) {
