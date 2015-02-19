@@ -1,0 +1,20 @@
+<h1> &lt; &lt; battleship.rb &gt; &gt; </h1>
+
+<div class="container">
+  <% 2.times do |i| %>
+    <table id=<%= "player-#{i}" %>>
+      <% @map.each_with_index do |row, i| %>
+        <tr>
+          <% row.each_with_index do |column, j| %>
+            <td class="<%= 'ship' if column == 1 %>"></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+
+  <%= form_for(@game, remote: true, format: :json) do |f| %>
+    <%= f.text_area :code, class: "code" %>
+    <%= f.submit "Submit" %>
+  <% end %>
+</div>
