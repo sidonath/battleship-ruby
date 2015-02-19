@@ -1,27 +1,40 @@
+BOT = <<-'BOT'
+class Player
+  def player_turn(map)
+
+    loop do
+      @x = rand(8)
+      @y = rand(8)
+      break unless map.visited?(@x, @y)
+    end
+
+    map.fire!(@x, @y)
+  end
+end
+BOT
+
+MAP = [
+    [ 0, 1, 1, 0, 1, 0, 0, 1 ],
+    [ 0, 0, 0, 0, 1, 0, 0, 1 ],
+    [ 0, 0, 0, 0, 1, 0, 0, 0 ],
+    [ 0, 0, 1, 1, 1, 1, 0, 0 ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 0, 1, 1, 1, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 1, 0, 0, 0 ],
+    [ 0, 0, 0, 0, 1, 0, 0, 0 ],
+  ]
+
 class GamesController < ApplicationController
   def show
     @game = Game.new
-    @map = [
-        [ 0, 1, 1, 0, 1, 0, 0, 1 ],
-        [ 0, 0, 0, 0, 1, 0, 0, 1 ],
-        [ 0, 0, 0, 0, 1, 0, 0, 0 ],
-        [ 0, 0, 1, 1, 1, 1, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 1, 1, 1, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 1, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 1, 0, 0, 0 ],
-      ]
+    @map = MAP
   end
 
   def create
-    moves = {
-      moves: [
-        { player: 0, x: 0, y: 0, result: 0 },
-        { player: 1, x: 5, y: 5, result: 1 },
-        { player: 1, x: 5, y: 6, result: 0 }
-      ]
-    }
-
-    render json: moves
+    gr = GameRunner.new(params[:game][:code], BOT, MAP)
+    moves = gr.()
+    render json: { moves: moves.flatten }
+  rescue RuntimeError => e
+    render json: { error: e.to_s }
   end
 end
