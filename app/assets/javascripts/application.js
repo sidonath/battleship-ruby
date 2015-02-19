@@ -11,12 +11,23 @@ $(document).on("ajax:success", function(event, response) {
   if (response['error']) {
     alert(response['error']);
   } else {
-    var moves = response["moves"];
-    var map = response["map"];
-    drawMoves(moves, map);
-    drawWinner(moves[moves.length-1]);
+    drawMoves(response["moves"], response["map"]);
   }
 })
+
+
+var drawMoves = function(moves, map) {
+  drawMap(0, map);
+  drawMap(1, map);
+
+  for(var i=0; i<moves.length; i++) {
+    var move = moves[i];
+    drawMove(move, i);
+  }
+  setTimeout(function() {
+    drawWinner(moves[moves.length-1]);
+  }, 250 * (i+1));
+}
 
 var drawWinner = function(lastMove) {
   var player = lastMove["player"];
@@ -26,16 +37,6 @@ var drawWinner = function(lastMove) {
   }
   else {
     alert("Draw!");
-  }
-}
-
-var drawMoves = function(moves, map) {
-  drawMap(0, map);
-  drawMap(1, map);
-
-  for(var i=0; i<moves.length; i++) {
-    var move = moves[i];
-    drawMove(move, i);
   }
 }
 
