@@ -10,6 +10,7 @@ gem 'ace-rails-ap'
 
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'sicuro'
+gem 'devise'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

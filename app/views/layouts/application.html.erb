@@ -7,6 +7,13 @@
 </head>
 <body>
 
+<% flash.each do |key, message| %>
+  <div class="alert alert-dismissible alert-<%= key.gsub('notice', 'success').gsub('alert', 'warning') %>" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <%= message %>
+  </div>
+<% end %>
+
 <%= yield %>
 
 <%= javascript_include_tag 'application' %>
