@@ -23,6 +23,10 @@ class Map
     return hit
   end
 
+  def size
+    @map.length
+  end
+
   def shots
     return @shots
   end
@@ -42,6 +46,13 @@ class MapInterface
   end
 
   def fire!(x, y)
+    if x < 0 || y < 0
+      raise ArgumentError, "x and y coordinates should be greater than 0 (x: #{x}, y: #{y})."
+    end
+    if x >= @map.size || y >= @map.size
+      raise ArgumentError, "x and y coordinates should be less than #{@map.size} (x: #{x}, y: #{y})."
+    end
+
     if @turn_done
       raise "You can call fire! only once per turn!"
     end
@@ -51,9 +62,8 @@ class MapInterface
     @was_hit = @map.fire!(x, y)
   end
 
-  # TODO Ovo je pravo zno-ru
   def visited?(x, y)
-    return !@map.shots.find { |s| s.x == x && s.y == y }.nil?
+    @map.shots.any? { |s| s.x == x && s.y == y }
   end
 end
 
@@ -71,9 +81,18 @@ class Engine
       @turn_no += 1
       map_interface = MapInterface.new(@map)
 
-      @player.player_turn(map_interface)
+      begin
+        @player.player_turn(map_interface)
+      rescue StandardError => err
+        raise InvalidAction, "[Turn #{@turn_no}]: #{err.message}"
+      end
 
       x, y = map_interface.last_shot
+
+      if x.nil? || y.nil?
+        raise NoAction, "[Turn #{@turn_no}]: No action was called."
+      end
+
       puts "#{x} #{y} #{map_interface.was_hit ? 1 : 0}"
 
       if @turn_no >= 200
@@ -83,6 +102,9 @@ class Engine
       break if @map.end?
     end
   end
+
+  class NoAction < RuntimeError; end
+  class InvalidAction < RuntimeError; end
 end
 
 <%= player_class %>
@@ -102,11 +124,19 @@ class PlayerRunner < Struct.new(:player_class, :map)
     Rails.logger.info(code)
     Rails.logger.info()
 
+    syntax_check = Sicuro.eval(player_class)
+    if syntax_check.stderr.present?
+      raise SyntaxError, syntax_check.stderr
+    end
+
     r = Sicuro.eval(code)
     if r.stderr.empty?
-      return r.stdout.split("\n")
+      return r.stdout.split("\n").map { |s| s.split.map(&:to_i) }
     else
-      raise RuntimeError, r.stderr
+      raise Error, r.stderr
     end
   end
+
+  class Error < RuntimeError; end
+  class SyntaxError < RuntimeError; end
 end

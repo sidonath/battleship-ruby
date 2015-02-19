@@ -1,10 +1,7 @@
 class GameRunner < Struct.new(:player_1_class, :player_2_class, :map)
   def call
-    player_1_runner = PlayerRunner.new(player_1_class, map)
-    player_2_runner = PlayerRunner.new(player_2_class, map)
-
-    player_1_results = player_1_runner.().map { |s| s.split.map(&:to_i) }
-    player_2_results = player_2_runner.().map { |s| s.split.map(&:to_i) }
+    player_1_results = wrap_exception("First player") { PlayerRunner.new(player_1_class, map).() }
+    player_2_results = wrap_exception("Second player") { PlayerRunner.new(player_2_class, map).() }
 
     moves = []
 
@@ -39,5 +36,16 @@ class GameRunner < Struct.new(:player_1_class, :player_2_class, :map)
     end
 
     moves
+  end
+
+  def wrap_exception(player_name, &blk)
+    yield
+  rescue PlayerRunner::SyntaxError => err
+    raise Error, err.message.lines[0]
+  rescue PlayerRunner::Error => err
+    raise Error, "#{player_name}'s code raised an exception:\n#{err.message.lines[0]}"
+  end
+
+  class Error < RuntimeError
   end
 end
