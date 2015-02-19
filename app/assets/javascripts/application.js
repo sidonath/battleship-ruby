@@ -15,12 +15,15 @@
 //= require_tree .
 
 $(document).on("ajax:success", function(event, response) {
-  drawMoves(response["moves"]);
+  drawMoves(response["moves"], response["map"]);
 })
 
-var drawMoves = function(data) {
-  for(var i=0; i<data.length; i++) {
-    var move = data[i]
+var drawMoves = function(moves, map) {
+  drawMap(0, map);
+  drawMap(1, map);
+
+  for(var i=0; i<moves.length; i++) {
+    var move = moves[i]
     drawMove(move);
   }
 }
@@ -35,11 +38,12 @@ var drawMove = function(move) {
   $(cell).addClass("result-"+result);
 }
 
-var drawMap = function(player, data) {
+var drawMap = function(player, map) {
   for(var i=0; i<8; i++) {
     for(var j=0; j<8; j++) {
       cell = getCell(player, i, j)
-      value = data[i][j];
+      value = map[j][i];
+      $(cell).removeClass();
       if(value === 1) $(cell).addClass("ship");
     }
   }

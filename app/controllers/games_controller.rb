@@ -33,7 +33,7 @@ class GamesController < ApplicationController
   def create
     gr = GameRunner.new(params[:game][:code], BOT, MAP)
     moves = gr.()
-    render json: { moves: moves.flatten }
+    render json: { map: MAP, moves: moves.flatten }
   rescue RuntimeError => e
     render json: { error: e.to_s }
   end
