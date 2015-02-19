@@ -7,14 +7,54 @@
 </head>
 <body>
 
-<% flash.each do |key, message| %>
-  <div class="alert alert-dismissible alert-<%= key.gsub('notice', 'success').gsub('alert', 'warning') %>" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <%= message %>
-  </div>
-<% end %>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <%= link_to "Podmornice", root_path, class: 'navbar-brand' %>
+    </div>
 
-<%= yield %>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <% if user_signed_in? %>
+          <li>
+            <p class="navbar-text">
+              <%= current_user.email %>
+            </p>
+          </li>
+          <li>
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: 'btn btn-default navbar-btn' %>
+          </li>
+        <% else %>
+          <li>
+            <%= link_to "Sign up", new_user_registration_path %>
+          </li>
+          <li>
+            <%= link_to "Log in", new_user_session_path %>
+          </li>
+        <% end %>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+  <% flash.each do |key, message| %>
+    <div class="alert alert-dismissible alert-<%= key.gsub('notice', 'success').gsub('alert', 'warning') %>" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <%= message %>
+    </div>
+  <% end %>
+
+  <%= yield %>
+</div>
 
 <%= javascript_include_tag 'application' %>
 </body>

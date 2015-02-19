@@ -1,8 +1,7 @@
 STARTING_POINT = <<-'STARTING_POINT'
 class Player
   def player_turn(map)
-    # vaš Ruby kôd ide ovdje
-    # sretno potapanje!
+    # Vaš Ruby kôd ide ovdje. Sretno potapanje!
   end
 end
 STARTING_POINT
