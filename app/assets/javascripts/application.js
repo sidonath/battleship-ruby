@@ -47,5 +47,5 @@ var drawMap = function(player, data) {
 
 var getCell = function(player, x, y) {
   var selector = "player-" + player;
-  return document.getElementById(selector).rows[x].cells[y];
+  return document.getElementById(selector).rows[y].cells[x];
 }
