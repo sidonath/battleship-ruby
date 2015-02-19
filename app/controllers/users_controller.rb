@@ -32,24 +32,21 @@ MAP = [
     [ 0, 0, 0, 0, 1, 0, 0, 0 ],
   ]
 
-class GamesController < ApplicationController
+class UsersController < ApplicationController
   def show
-    code =
-      if current_user.code.present?
-        current_user.code
-      else
-        STARTING_POINT
-      end
+    if current_user.code.blank?
+      current_user.update(code: STARTING_POINT)
+    end
 
-    @game = Game.new(code: code)
+    @user = current_user
     @map = MAP
   end
 
-  def create
-    code = params[:game][:code]
+  def update
+    code = params[:user][:code]
     current_user.update!(code: code)
 
-    gr = GameRunner.new(params[:game][:code], BOT, MAP)
+    gr = GameRunner.new(code, BOT, MAP)
     moves = gr.()
     render json: { map: MAP, moves: moves.flatten }
   rescue RuntimeError => e

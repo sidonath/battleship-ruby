@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  root 'games#show'
+  root 'users#show'
 
   devise_for :users
-  resource :games
+  resource :user, only: [:show, :update]
 
   namespace :admin do
     root 'users#index'

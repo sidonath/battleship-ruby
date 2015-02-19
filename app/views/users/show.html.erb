@@ -13,7 +13,7 @@
     </table>
   <% end %>
 
-  <%= form_for(@game, remote: true, format: :json) do |f| %>
+  <%= form_for(@user, remote: true, format: :json) do |f| %>
     <%= f.text_area :code, class: "code-textarea" %>
     <div id="editor" class="code"></div>
     <%= f.submit "Submit" %>
