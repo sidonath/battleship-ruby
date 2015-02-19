@@ -20,19 +20,21 @@ var drawMoves = function(moves, map) {
   drawMap(1, map);
 
   for(var i=0; i<moves.length; i++) {
-    var move = moves[i]
-    drawMove(move);
+    var move = moves[i];
+    drawMove(move, i);
   }
 }
 
-var drawMove = function(move) {
-  var player = move["player"];
-  var x = move["x"];
-  var y = move["y"];
-  var result = move["result"];
-  var cell = getCell(player, x, y);
+var drawMove = function(move, index) {
+  setTimeout(function() {
+    var player = move["player"];
+    var x = move["x"];
+    var y = move["y"];
+    var result = move["result"];
+    var cell = getCell(player, x, y);
 
-  $(cell).addClass("result-"+result);
+    $(cell).addClass("result-"+result);
+  }, 250 * index);
 }
 
 var drawMap = function(player, map) {
