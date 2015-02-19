@@ -15,10 +15,30 @@ $(document).on("ajax:success", function(event, response) {
   }
 })
 
+var DRAW_INTERVAL = 100;
+var playerStats;
+
+
+var initPlayerStats = function() {
+  playerStats = { 
+    0 : { hits : 0, moves : 0 },
+    1 : { hits : 0, moves : 0 }
+  };
+}
+
+var drawPlayerStats = function(player, stat) {
+  $('#player-' + player + ' span').html("MOVES : " + stat.moves + " HITS : " + stat.hits);
+}
+
+var updatePlayerStats = function(move) {
+  playerStats[move["player"]].hits += move["result"];
+  playerStats[move["player"]].moves ++;
+}
 
 var drawMoves = function(moves, map) {
   drawMap(0, map);
   drawMap(1, map);
+  initPlayerStats();
 
   for(var i=0; i<moves.length; i++) {
     var move = moves[i];
@@ -26,19 +46,20 @@ var drawMoves = function(moves, map) {
   }
   setTimeout(function() {
     drawWinner(moves[moves.length-1]);
-  }, 250 * (i+1));
+  }, DRAW_INTERVAL * (i+1));
 }
 
 var drawWinner = function(lastMove) {
   var player = lastMove["player"];
   var result = lastMove["result"];
   if (result == 1) {
-    alert("Player " + player + " wins!");
+    alert("Player " + (player+1) + " wins!");
   }
   else {
     alert("Draw!");
   }
 }
+
 
 var drawMove = function(move, index) {
   setTimeout(function() {
@@ -48,8 +69,11 @@ var drawMove = function(move, index) {
     var result = move["result"];
     var cell = getCell(player, x, y);
 
+    updatePlayerStats(move);
+    drawPlayerStats(player, playerStats[player]);
+
     $(cell).addClass("result-"+result);
-  }, 250 * index);
+  }, DRAW_INTERVAL * index);
 }
 
 var drawMap = function(player, map) {

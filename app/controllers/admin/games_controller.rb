@@ -16,6 +16,8 @@ class Admin::GamesController < ApplicationController
     gr = GameRunner.new(game.home_player.code, game.guest_player.code, game.map)
     moves = gr.()
     render json: { map: ::UsersController::MAP, moves: moves.flatten }
+  rescue RuntimeError => e
+    render json: { error: e.to_s }
   end
 
   private
