@@ -21,19 +21,6 @@ class Player
 end
 BOT
 
-MAP = [
-    [ 1, 1, 0, 1, 0, 0, 1, 1, 1, 1 ],
-    [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ],
-    [ 1, 0, 0, 1, 0, 1, 1, 1, 0, 1 ],
-    [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
-    [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-    [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 1 ],
-    [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 1 ],
-    [ 1, 1, 0, 0, 0, 0, 0, 0, 0, 1 ],
-    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-    [ 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 ]
-  ]
-
 class UsersController < ApplicationController
   def show
     if current_user.code.blank?
@@ -41,16 +28,16 @@ class UsersController < ApplicationController
     end
 
     @user = current_user
-    @map = MAP
+    @map = Maps::TRAINING
   end
 
   def update
     code = params[:user][:code]
     current_user.update!(code: code)
 
-    gr = GameRunner.new(code, BOT, MAP)
+    gr = GameRunner.new(code, BOT, Maps::TRAINING)
     moves = gr.()
-    render json: { map: MAP, moves: moves.flatten }
+    render json: { map: Maps::TRAINING, moves: moves.flatten }
   rescue RuntimeError => e
     render json: { error: e.to_s }
   end

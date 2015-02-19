@@ -28,6 +28,9 @@
     <%= f.select :guest_player_id, options_from_collection_for_select(@users, :id, :email) %>
   </div>
   <div>
+    <%= select_tag :map_number, options_for_select([["Map 1", "1"], ["Map 2", "2"], ["Map 3", "3"]]) %>
+  </div>
+  <div>
     <%= f.submit 'Start the Game', class: 'btn' %>
   </div>
 <% end %>

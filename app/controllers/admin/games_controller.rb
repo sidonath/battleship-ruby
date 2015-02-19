@@ -1,7 +1,7 @@
 class Admin::GamesController < ApplicationController
   def create
     game = Game.create(game_params) do |game|
-      game.map = ::UsersController::MAP
+      game.map = Maps.const_get("COMPETITION_#{Integer(params[:map_number])}")
     end
 
     redirect_to [:admin, game]
@@ -15,7 +15,7 @@ class Admin::GamesController < ApplicationController
     game = Game.find(params[:id])
     gr = GameRunner.new(game.home_player.code, game.guest_player.code, game.map)
     moves = gr.()
-    render json: { map: ::UsersController::MAP, moves: moves.flatten }
+    render json: { map: game.map, moves: moves.flatten }
   rescue RuntimeError => e
     render json: { error: e.to_s }
   end
