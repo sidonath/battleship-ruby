@@ -77,8 +77,8 @@ var drawMove = function(move, index) {
 }
 
 var drawMap = function(player, map) {
-  for(var i=0; i<8; i++) {
-    for(var j=0; j<8; j++) {
+  for(var i=0; i<10; i++) {
+    for(var j=0; j<10; j++) {
       cell = getCell(player, i, j)
       value = map[j][i];
       $(cell).removeClass();
