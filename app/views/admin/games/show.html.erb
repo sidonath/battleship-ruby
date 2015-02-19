@@ -1,9 +1,13 @@
-<h1> &lt; &lt; battleship.rb &gt; &gt; </h1>
+<h1>
+  <%= @game.home_player.email %>
+  vs
+  <%= @game.guest_player.email %>
+</h1>
 
 <div class="maps-container">
   <% 2.times do |i| %>
     <table id=<%= "player-#{i}" %>>
-      <% @map.each_with_index do |row, i| %>
+      <% @game.map.each_with_index do |row, i| %>
         <tr>
           <% row.each_with_index do |column, j| %>
             <td class="<%= 'ship' if column == 1 %>"></td>
@@ -12,10 +16,8 @@
       <% end %>
     </table>
   <% end %>
+</div>
 
-  <%= form_for(@user, remote: true, format: :json) do |f| %>
-    <%= f.text_area :code, class: "code-textarea" %>
-    <div id="editor" class="code"></div>
-    <%= f.submit "Submit" %>
-  <% end %>
+<div class='button-container'>
+  <%= button_to "Fight!", start_admin_game_path, remote: true, format: :json, class: 'btn btn-danger btn-lg' %>
 </div>

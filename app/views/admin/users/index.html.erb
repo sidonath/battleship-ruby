@@ -19,3 +19,15 @@
     </li>
   <% end %>
 </ul>
+
+<h2>Create Game</h2>
+<%= form_for [:admin, Game.new] do |f| %>
+  <div>
+    <%= f.select :home_player_id, options_from_collection_for_select(@users, :id, :email) %>
+    vs
+    <%= f.select :guest_player_id, options_from_collection_for_select(@users, :id, :email) %>
+  </div>
+  <div>
+    <%= f.submit 'Start the Game', class: 'btn' %>
+  </div>
+<% end %>
