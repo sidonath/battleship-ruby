@@ -1,3 +1,12 @@
+STARTING_POINT = <<-'STARTING_POINT'
+class Player
+  def player_turn(map)
+    # vaš Ruby kôd ide ovdje
+    # sretno potapanje!
+  end
+end
+STARTING_POINT
+
 BOT = <<-'BOT'
 class Player
   def player_turn(map)
@@ -26,7 +35,7 @@ MAP = [
 
 class GamesController < ApplicationController
   def show
-    @game = Game.new
+    @game = Game.new(code: STARTING_POINT)
     @map = MAP
   end
 

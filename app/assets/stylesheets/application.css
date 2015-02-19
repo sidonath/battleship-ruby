@@ -59,7 +59,13 @@ td.result-1 {
 }
 
 .code {
+  position: relative;
   width: 955px;
   height: 300px;
   margin-top: 25px;
+  font-size: 16px;
+}
+
+.code-textarea {
+  display: none;
 }

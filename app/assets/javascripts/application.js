@@ -12,6 +12,10 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require ace/ace
+//= require ace/worker-html
+//= require ace/mode-ruby
+//= require ace/theme-solarized_dark
 //= require_tree .
 
 $(document).on("ajax:success", function(event, response) {
@@ -52,4 +56,34 @@ var drawMap = function(player, map) {
 var getCell = function(player, x, y) {
   var selector = "player-" + player;
   return document.getElementById(selector).rows[y].cells[x];
+}
+
+if ($('#editor').length) {
+  var RubyMode = require('ace/mode/ruby').Mode;
+
+  var editor = ace.edit('editor');
+  var textarea = $('.code-textarea');
+
+  $('#editor').css({ fontSize: '16px' })
+  editor.getSession().setMode(new RubyMode());
+  editor.setTheme('ace/theme/solarized_dark');
+
+  editor.getSession().setTabSize(2);
+  editor.getSession().setUseSoftTabs(true);
+
+  editor.setValue(textarea.val());
+  editor.getSession().on('change', function () {
+    textarea.val(editor.getValue());
+  });
+  textarea.closest('form').on('submit', function () {
+    textarea.val(editor.getValue());
+  });
+
+  editor.commands.addCommand({
+    name: 'submitCommand',
+    bindKey: {win: 'Ctrl-Enter',  mac: 'Command-Enter'},
+    exec: function(editor) {
+      textarea.closest('form').submit();
+    }
+  });
 }
